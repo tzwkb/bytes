@@ -53,3 +53,25 @@ errors.
 - Rust examples were reviewed against the pinned public API and are intended
   for `bytes = "1"`, but compilation could not be performed locally without
   the unavailable toolchain.
+
+## Review Fixes
+
+- `docs/sourcey/buf-mut.md`: changed the one-byte frame-prefix example to
+  return `Result<(), &'static str>`. It rejects `body.len() > u8::MAX` before
+  casting or writing, and the example asserts that a 256-byte payload returns
+  an error instead of silently truncating its prefix.
+- `docs/sourcey/bytes.md`: limited the `Bytes::slice` reference-count statement
+  to non-empty valid ranges. The page now documents that an empty range returns
+  an independent empty `Bytes` rather than a shared backing-storage handle.
+
+## Review Verification
+
+Executed exactly:
+
+```text
+python3 -m unittest tests.test_sourcey_docs -v
+```
+
+Result: `Ran 6 tests in 0.004s` and `OK`.
+
+Executed `git diff --check`; it exited successfully with no output.

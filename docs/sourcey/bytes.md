@@ -47,10 +47,11 @@ This deliberately allocates and copies; it is not a borrowing conversion.
 
 ## `Bytes::slice`
 
-Usage: `bytes.slice(range) -> Bytes`. This returns an `O(1)` view and increases
-the backing allocation's reference count. It panics unless `begin <= end` and
-`end <= bytes.len()`; validate protocol offsets before passing them. An empty
-range is valid and yields an empty view. [View pinned source](https://github.com/tokio-rs/bytes/blob/d5c8ad3227afe459c09f1d0d85455abf00f0381a/src/bytes.rs#L373)
+Usage: `bytes.slice(range) -> Bytes`. A non-empty valid range returns an `O(1)`
+view and increments the backing allocation's reference count. It panics unless
+`begin <= end` and `end <= bytes.len()`; validate protocol offsets before
+passing them. An empty range is valid but returns an independent empty `Bytes`,
+not a shared backing-storage handle. [View pinned source](https://github.com/tokio-rs/bytes/blob/d5c8ad3227afe459c09f1d0d85455abf00f0381a/src/bytes.rs#L373)
 
 ## `Bytes::split_off`
 

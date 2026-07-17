@@ -15,20 +15,34 @@ the safe provided methods instead.
 ```rust
 use bytes::{BufMut, BytesMut};
 
-fn put_record(dst: &mut impl BufMut, body: &[u8]) {
+fn put_record(dst: &mut impl BufMut, body: &[u8]) -> Result<(), &'static str> {
+    if body.len() > u8::MAX as usize {
+        return Err("record body exceeds u8 length prefix");
+    }
     dst.put_u8(body.len() as u8);
     dst.put_slice(body);
+    Ok(())
 }
 
 let mut out = BytesMut::new();
-put_record(&mut out, b"ok");
+put_record(&mut out, b"ok").unwrap();
 assert_eq!(&out[..], b"\x02ok");
+
+let too_long = [0_u8; 256];
+assert!(put_record(&mut BytesMut::new(), &too_long).is_err());
 ```
 
 Growable destinations can allocate during writes; fixed slices cannot. Plan
 capacity for the entire field before a `put_*` call when the destination may
 not grow. See [`BytesMut`](bytes-mut.md) for reserving and explicit spare
 capacity, and [`Adapters`](adapters.md) for the `std` writer bridge.
+
+When a protocol uses a one-byte length prefix, validate `body.len()` before
+converting it to `u8`. The example returns an error for 256 bytes or more, so
+it neither writes a truncated prefix nor appends a body with a mismatched
+length. The guard runs before either `BufMut` write; a fixed-capacity
+destination can still panic later if it lacks capacity for an otherwise valid
+record.
 
 ## `BufMut`
 
