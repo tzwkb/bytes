@@ -36,7 +36,8 @@ consuming `Buf` getters without checking `remaining()`. [View pinned source](htt
 Usage: `Bytes::from_static(bytes: &'static [u8]) -> Bytes`. The result points
 at the supplied static slice without allocation or copying. The input must
 really have `'static` lifetime, such as `b"token"`; use `copy_from_slice` for
-borrowed request data. [View pinned source](https://github.com/tokio-rs/bytes/blob/d5c8ad3227afe459c09f1d0d85455abf00f0381a/src/bytes.rs#L182)
+borrowed request data. Static storage has no reference count, so slicing a
+`Bytes::from_static` value does not increment one. [View pinned source](https://github.com/tokio-rs/bytes/blob/d5c8ad3227afe459c09f1d0d85455abf00f0381a/src/bytes.rs#L182)
 
 ## `Bytes::copy_from_slice`
 
@@ -47,8 +48,10 @@ This deliberately allocates and copies; it is not a borrowing conversion.
 
 ## `Bytes::slice`
 
-Usage: `bytes.slice(range) -> Bytes`. A non-empty valid range returns an `O(1)`
-view and increments the backing allocation's reference count. It panics unless
+Usage: `bytes.slice(range) -> Bytes`. A non-empty valid range backed by
+reference-counted storage returns an `O(1)` view and increments that storage's
+reference count. A non-empty slice of `Bytes::from_static` is also `O(1)`, but
+uses static storage and has no reference count to increment. It panics unless
 `begin <= end` and `end <= bytes.len()`; validate protocol offsets before
 passing them. An empty range is valid but returns an independent empty `Bytes`,
 not a shared backing-storage handle. [View pinned source](https://github.com/tokio-rs/bytes/blob/d5c8ad3227afe459c09f1d0d85455abf00f0381a/src/bytes.rs#L373)

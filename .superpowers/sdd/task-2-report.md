@@ -81,3 +81,20 @@ python3 -m unittest tests.test_sourcey_docs -v
 Result: `Ran 6 tests in 0.004s` and `OK`.
 
 Executed `git diff --check`; it exited successfully with no output.
+
+## Static Storage Review Fix
+
+- `docs/sourcey/bytes.md`: qualified `Bytes::slice` so a reference-count
+  increment applies only to non-empty slices backed by reference-counted
+  storage. It now separately states that `Bytes::from_static` uses static
+  storage with no reference count, including for its non-empty `O(1)` slices.
+
+Executed exactly:
+
+```text
+python3 -m unittest tests.test_sourcey_docs -v
+```
+
+Result: `Ran 6 tests in 0.004s` and `OK`.
+
+Executed `git diff --check`; it exited successfully with no output.
