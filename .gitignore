@@ -1,2 +1,7 @@
 /target
 /Cargo.lock
+/.sourcey/
+/node_modules/
+/docs/sourcey/dist/
+/.superpowers/
+__pycache__/
