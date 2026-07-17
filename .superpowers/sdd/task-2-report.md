@@ -45,14 +45,20 @@ Result: `Ran 6 tests in 0.004s` and `OK`.
 Also executed `git diff --check` before staging; it produced no whitespace
 errors.
 
-## Concerns and Gaps
+## Rust Verification
 
-- `cargo` and `rustc` are not installed or available on `PATH` in this
-  worktree environment. `cargo test --all-features` was not run, and no Rust
-  test result is claimed.
-- Rust examples were reviewed against the pinned public API and are intended
-  for `bytes = "1"`, but compilation could not be performed locally without
-  the unavailable toolchain.
+The Homebrew-managed rustup toolchain was already installed but its keg-only
+binary directory was not on `PATH`. The controller added that directory for
+the command and ran:
+
+```text
+export PATH="$(brew --prefix rustup)/bin:$PATH"
+cargo test --all-features
+```
+
+Result: all suites passed, including 2 library tests, 875 buffer tests, 23
+mutable-buffer tests, 119 bytes tests, the remaining integration suites, and
+248 documentation tests. No Rust source file was changed.
 
 ## Review Fixes
 
