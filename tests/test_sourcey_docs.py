@@ -26,21 +26,27 @@ class LinkCollector(HTMLParser):
     def __init__(self):
         super().__init__()
         self.urls = []
+        self.anchors = set()
 
     def handle_starttag(self, tag, attrs):
         attributes = dict(attrs)
         for name in ("href", "src"):
             if attributes.get(name):
                 self.urls.append(attributes[name])
+        for name in ("id", "name"):
+            if attributes.get(name):
+                self.anchors.add(attributes[name])
 
 
 def is_local_url(url):
     parsed = urlsplit(url)
-    return not parsed.scheme and not parsed.netloc and parsed.path
+    return not parsed.scheme and not parsed.netloc and (parsed.path or parsed.fragment)
 
 
 def output_target(output, page, url):
     path = unquote(urlsplit(url).path)
+    if not path:
+        return page
     if path.startswith("/en/latest/"):
         path = path.removeprefix("/en/latest/")
     elif path.startswith("/"):
@@ -50,6 +56,27 @@ def output_target(output, page, url):
 
     target = output / path
     return target / "index.html" if target.is_dir() else target
+
+
+def missing_internal_targets(output):
+    missing = []
+    for page in output.rglob("*.html"):
+        parser = LinkCollector()
+        parser.feed(page.read_text(encoding="utf-8"))
+        for url in parser.urls:
+            if is_local_url(url):
+                target = output_target(output, page, url)
+                if not target.is_file():
+                    missing.append(f"{page.relative_to(output)} -> {url}")
+                    continue
+
+                fragment = unquote(urlsplit(url).fragment)
+                if fragment:
+                    target_parser = LinkCollector()
+                    target_parser.feed(target.read_text(encoding="utf-8"))
+                    if fragment not in target_parser.anchors:
+                        missing.append(f"{page.relative_to(output)} -> {url}")
+    return missing
 
 
 class SourceyDocsTests(unittest.TestCase):
@@ -125,6 +152,34 @@ class SourceyDocsTests(unittest.TestCase):
         config = (ROOT / ".readthedocs.yaml").read_text(encoding="utf-8")
         self.assertIn('npm run docs:build -- --output "$READTHEDOCS_OUTPUT/html" --quiet', config)
 
+    def test_generated_internal_link_validation_rejects_missing_fragment(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            (output / "index.html").write_text(
+                '<a href="#missing-fragment">broken</a><h1 id="present">Present</h1>',
+                encoding="utf-8",
+            )
+
+            self.assertEqual(
+                missing_internal_targets(output),
+                ["index.html -> #missing-fragment"],
+            )
+
+    def test_generated_internal_link_validation_accepts_id_and_named_anchors(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            (output / "index.html").write_text(
+                '<a href="#by-id">same page</a><a href="other.html#by-name">other page</a>'
+                '<h1 id="by-id">ID anchor</h1>',
+                encoding="utf-8",
+            )
+            (output / "other.html").write_text(
+                '<a name="by-name">Named anchor</a>',
+                encoding="utf-8",
+            )
+
+            self.assertEqual(missing_internal_targets(output), [])
+
     @unittest.skipUnless((ROOT / "package.json").is_file(), "Sourcey build configuration has not been created")
     def test_generated_site_assets_and_internal_links_resolve(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -138,16 +193,7 @@ class SourceyDocsTests(unittest.TestCase):
             for name in ("index.html", "search-index.json", "sitemap.xml", "llms.txt", "llms-full.txt"):
                 self.assertTrue((output / name).is_file(), name)
 
-            missing = []
-            for page in output.rglob("*.html"):
-                parser = LinkCollector()
-                parser.feed(page.read_text(encoding="utf-8"))
-                for url in parser.urls:
-                    if is_local_url(url):
-                        target = output_target(output, page, url)
-                        if not target.is_file():
-                            missing.append(f"{page.relative_to(output)} -> {url}")
-            self.assertEqual(missing, [])
+            self.assertEqual(missing_internal_targets(output), [])
 
 
 if __name__ == "__main__":
