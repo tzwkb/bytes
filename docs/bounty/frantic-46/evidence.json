@@ -1,0 +1,126 @@
+{
+  "schema": "frantic.sourcey.evidence.v1",
+  "summary": "Bytes Field Guide is an eight-page Sourcey 3.6.5 documentation site for the maintained MIT-licensed Rust bytes library, grounded in 31 exact API mappings at a pinned upstream commit, published from a durable project-specific Read the Docs home, and backed by a valid 12-receipt runx Sourcey tree.",
+  "public_url": "https://bytes-field-guide.readthedocs.io/en/latest/",
+  "repository": {
+    "documentation_repo": "https://github.com/tzwkb/bytes",
+    "upstream_repo": "https://github.com/tokio-rs/bytes",
+    "source_commit": "d5c8ad3227afe459c09f1d0d85455abf00f0381a",
+    "source_version": "1.12.1",
+    "source_commit_date": "2026-07-16T12:19:37+02:00",
+    "license": "MIT",
+    "primary_language": "Rust"
+  },
+  "runx": {
+    "version_output": "runx-cli 0.7.2",
+    "skill": "sourcey 0.1.1 at runx commit ebc8d6caf1df4ea21359ee6161c46041b8be8511",
+    "run_id": "run_sourcey_b359ba075db0",
+    "receipt_ref": "runx:receipt:sha256:967f8492ab6f8cfc206d5ae074973bc7149b72c1c3ba12835367108f675ed28d",
+    "receipt_directory": "docs/bounty/frantic-46/receipts",
+    "verification_mode": "local-development",
+    "verified_receipt_count": 12
+  },
+  "sourcey": {
+    "version_output": "3.6.5",
+    "adapter": "markdown",
+    "config": "docs/sourcey/sourcey.config.ts",
+    "local_command": "npm run docs:build -- --output <output> --quiet",
+    "deployment_method": "Read the Docs custom build from tzwkb/bytes using the committed .readthedocs.yaml",
+    "deployment_branch": "main",
+    "deployment_commit": "c6bc06d8ad9ad1618d023bd2aad3b4c954c20952",
+    "readthedocs_build": 33628289,
+    "pages": [
+      "index",
+      "installation",
+      "bytes",
+      "bytes-mut",
+      "buf",
+      "buf-mut",
+      "adapters",
+      "patterns"
+    ]
+  },
+  "coverage": {
+    "documented_public_apis": 31,
+    "minimum_required": 15,
+    "source_files_sampled": [
+      "src/bytes.rs",
+      "src/bytes_mut.rs",
+      "src/buf/buf_impl.rs",
+      "src/buf/buf_mut.rs",
+      "src/buf/chain.rs",
+      "src/buf/take.rs",
+      "src/buf/reader.rs",
+      "src/buf/writer.rs",
+      "src/buf/uninit_slice.rs"
+    ],
+    "notes": "The field guide covers immutable and mutable containers, read and write cursor traits, std::io adapters, framing patterns, feature selection, capacity checks, and ownership transitions. Each inventory entry names an exact source path, line, token, category, and rendered page."
+  },
+  "observations": [
+    {
+      "id": "runx_cli_version",
+      "result": "runx-cli 0.7.2",
+      "evidence": "runx --version"
+    },
+    {
+      "id": "ecosystem_target",
+      "result": "Rust library bytes 1.12.1",
+      "evidence": "Cargo.toml at pinned upstream commit d5c8ad3227afe459c09f1d0d85455abf00f0381a"
+    },
+    {
+      "id": "repository_and_license",
+      "result": "Maintained third-party repository tokio-rs/bytes under MIT",
+      "evidence": "Repository metadata, Cargo.toml, and LICENSE at the pinned commit"
+    },
+    {
+      "id": "sourcey_adapter_and_config",
+      "result": "Sourcey 3.6.5 markdown adapter with eight-page navigation",
+      "evidence": "package-lock.json and docs/sourcey/sourcey.config.ts"
+    },
+    {
+      "id": "api_coverage",
+      "result": "31 exact public API mappings across nine Rust source files",
+      "evidence": "docs/sourcey/api-inventory.json and tests.test_sourcey_docs"
+    },
+    {
+      "id": "governed_build",
+      "result": "sealed",
+      "evidence": "All 11 Sourcey graph steps completed: discover, approve, author, write, build, critique, revise, rebuild, verify, and package"
+    },
+    {
+      "id": "receipt_tree",
+      "result": "valid",
+      "evidence": "runx verify reported one valid tree with 12 receipts and no findings"
+    },
+    {
+      "id": "local_contract_tests",
+      "result": "13 passed, 0 failed",
+      "evidence": "python3 -m unittest tests.test_sourcey_docs -v, including generated assets, internal links, same-page fragments, cross-page fragments, config, pinning, and inventory"
+    },
+    {
+      "id": "readthedocs_build",
+      "result": "finished and successful",
+      "evidence": "Read the Docs API build 33628289 at deployment commit c6bc06d8ad9ad1618d023bd2aad3b4c954c20952"
+    },
+    {
+      "id": "live_surface",
+      "result": "8 pages and 6 core generated assets returned HTTP 200",
+      "evidence": "Unauthenticated checks against bytes-field-guide.readthedocs.io/en/latest/"
+    },
+    {
+      "id": "generated_navigation",
+      "result": "all eight pages exposed through Sourcey navigation",
+      "evidence": "Live generated HTML plus sourcey.config.ts navigation contract"
+    },
+    {
+      "id": "publication_home",
+      "result": "dedicated project-specific Read the Docs site linked from the documentation fork",
+      "evidence": "bytes-field-guide.readthedocs.io builds tzwkb/bytes main through committed configuration; README identifies the site as a community supplemental field guide"
+    }
+  ],
+  "gaps": [
+    "The documentation is a maintained community supplement in tzwkb/bytes, not an upstream tokio-rs/bytes publication or endorsement.",
+    "The API inventory is pinned to bytes 1.12.1 and must be regenerated when upstream source lines or signatures change.",
+    "Manual Read the Docs repository configuration does not install an upstream webhook; rebuilds must be triggered from Read the Docs after future source updates unless integration permissions are expanded."
+  ]
+}

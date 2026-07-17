@@ -1,6 +1,7 @@
 /target
 /Cargo.lock
 /.sourcey/
+/.runx/
 /node_modules/
 /docs/sourcey/dist/
 /.superpowers/

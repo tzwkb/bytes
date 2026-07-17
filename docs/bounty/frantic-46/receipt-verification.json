@@ -1,0 +1,15 @@
+{
+  "receipt_dir": "docs/bounty/frantic-46/receipts",
+  "signature_mode": "local-development",
+  "trees": [
+    {
+      "root_receipt_id": "sha256:967f8492ab6f8cfc206d5ae074973bc7149b72c1c3ba12835367108f675ed28d",
+      "receipt_count": 12,
+      "parent_missing": null,
+      "valid": true,
+      "findings": []
+    }
+  ],
+  "unreadable_files": [],
+  "valid": true
+}
